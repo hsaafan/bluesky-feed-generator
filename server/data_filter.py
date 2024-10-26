@@ -1,21 +1,36 @@
 from collections import defaultdict
 
 from atproto import models
-import pandas as pd
 
+from server.whitelist import generate_whitelist_ids
 from server.logger import logger
 from server.database import db, Post
 
-whitelist = pd.read_csv("account_whitelist.csv", header=None)[0].to_list()
-whitelist = set(whitelist)
+import time
+
+WHITELIST = generate_whitelist_ids()
+logger.info(f"Whitelist: {WHITELIST}")
+WHITELIST_UPDATE_INTERVAL = 3600
+PREV_WHITELIST_UPDATE = time.time()
+
+
+def update_whitelist():
+    global PREV_WHITELIST_UPDATE
+
+    if time.time() - PREV_WHITELIST_UPDATE < WHITELIST_UPDATE_INTERVAL:
+        return
+
+    PREV_WHITELIST_UPDATE = time.time()
+
+    global WHITELIST
+    WHITELIST = generate_whitelist_ids()
+    logger.info(f"Updated whitelist: {WHITELIST}")
 
 
 def operations_callback(ops: defaultdict) -> None:
     # Here we can filter, process, run ML classification, etc.
     # After our feed alg we can save posts into our DB
     # Also, we should process deleted posts to remove them from our DB and keep it in sync
-
-    # for example, let's create our custom feed that will contain all posts that contains alf related text
 
     posts_to_create = []
     for created_post in ops[models.ids.AppBskyFeedPost]["created"]:
@@ -25,16 +40,18 @@ def operations_callback(ops: defaultdict) -> None:
         # print all texts just as demo that data stream works
         post_with_images = isinstance(record.embed, models.AppBskyEmbedImages.Main)
         inlined_text = record.text.replace("\n", " ")
-        logger.info(
-            f"NEW POST "
-            f"[CREATED_AT={record.created_at}]"
-            f"[AUTHOR={author}]"
-            f"[WITH_IMAGE={post_with_images}]"
-            f": {inlined_text}"
-        )
 
         # only alf-related posts
-        if author in whitelist:
+        if author in WHITELIST:
+            logger.info(
+                f"NEW POST "
+                f"[CREATED_AT={record.created_at}]"
+                f"[AUTHOR={author}]"
+                f"[WITH_IMAGE={post_with_images}]"
+                f": {inlined_text}"
+            )
+            logger.info(f"{created_post}")
+
             reply_root = reply_parent = None
             if record.reply:
                 reply_root = record.reply.root.uri
@@ -52,10 +69,12 @@ def operations_callback(ops: defaultdict) -> None:
     if posts_to_delete:
         post_uris_to_delete = [post["uri"] for post in posts_to_delete]
         Post.delete().where(Post.uri.in_(post_uris_to_delete))
-        logger.info(f"Deleted from feed: {len(post_uris_to_delete)}")
+        # logger.info(f"Deleted from feed: {len(post_uris_to_delete)}")
 
     if posts_to_create:
         with db.atomic():
             for post_dict in posts_to_create:
                 Post.create(**post_dict)
         logger.info(f"Added to feed: {len(posts_to_create)}")
+
+    update_whitelist()
