@@ -62,6 +62,8 @@ def main():
             avatar_data = f.read()
             avatar_blob = client.upload_blob(avatar_data).blob
 
+    print(f"{DISPLAY_NAME}:{DESCRIPTION}:{HOSTNAME}")
+    print(client.me.did)
     response = client.com.atproto.repo.put_record(
         models.ComAtprotoRepoPutRecord.Data(
             repo=client.me.did,
