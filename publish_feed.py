@@ -27,7 +27,7 @@ RECORD_NAME: str = "femdom-findom"
 
 # A display name for your feed
 # Ex: What's Hot
-DISPLAY_NAME: str = "Curated Femdom & Findom Creators"
+DISPLAY_NAME: str = "Curated Femdom & Findom"
 
 # (Optional) A description of your feed
 # Ex: Top trending content from the whole network
