@@ -41,6 +41,11 @@ def operations_callback(ops: defaultdict) -> None:
         post_with_images = isinstance(record.embed, models.AppBskyEmbedImages.Main)
         inlined_text = record.text.replace("\n", " ")
 
+        reply_root = reply_parent = None
+        if record.reply:
+            reply_root = record.reply.root.uri
+            reply_parent = record.reply.parent.uri
+
         # only alf-related posts
         if author in WHITELIST and not record.reply:
             logger.info(
@@ -51,11 +56,6 @@ def operations_callback(ops: defaultdict) -> None:
                 f": {inlined_text}"
             )
             logger.info(f"{created_post}")
-
-            reply_root = reply_parent = None
-            if record.reply:
-                reply_root = record.reply.root.uri
-                reply_parent = record.reply.parent.uri
 
             post_dict = {
                 "uri": created_post["uri"],
