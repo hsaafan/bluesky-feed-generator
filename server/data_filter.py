@@ -10,7 +10,7 @@ import time
 
 WHITELIST = generate_whitelist_ids()
 logger.info(f"Whitelist: {WHITELIST}")
-WHITELIST_UPDATE_INTERVAL = 3600
+WHITELIST_UPDATE_INTERVAL = 60 * 5
 PREV_WHITELIST_UPDATE = time.time()
 
 

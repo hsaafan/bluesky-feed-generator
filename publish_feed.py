@@ -23,15 +23,17 @@ HOSTNAME: str = os.getenv("HOSTNAME")
 # A short name for the record that will show in urls
 # Lowercase with no spaces.
 # Ex: whats-hot
-RECORD_NAME: str = "custom-feed-xamjp1"
+RECORD_NAME: str = "femdom-findom-feed"
 
 # A display name for your feed
 # Ex: What's Hot
-DISPLAY_NAME: str = "Example feed generator, trying stuff out"
+DISPLAY_NAME: str = "Curated Femdom & Findom Creators"
 
 # (Optional) A description of your feed
 # Ex: Top trending content from the whole network
-DESCRIPTION: str = "powered by The AT Protocol SDK for Python"
+DESCRIPTION: str = (
+    "A curated list of femdom and findom content, message to have your posts added to the feed"
+)
 
 # (Optional) The path to an image to be used as your feed's avatar
 # Ex: ./path/to/avatar.jpeg
