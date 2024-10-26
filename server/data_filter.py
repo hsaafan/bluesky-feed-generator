@@ -42,7 +42,7 @@ def operations_callback(ops: defaultdict) -> None:
         inlined_text = record.text.replace("\n", " ")
 
         # only alf-related posts
-        if author in WHITELIST:
+        if author in WHITELIST and not record.reply:
             logger.info(
                 f"NEW POST "
                 f"[CREATED_AT={record.created_at}]"
