@@ -23,7 +23,7 @@ HOSTNAME: str = os.getenv("HOSTNAME")
 # A short name for the record that will show in urls
 # Lowercase with no spaces.
 # Ex: whats-hot
-RECORD_NAME: str = "femdom-findom-feed"
+RECORD_NAME: str = "femdom-findom"
 
 # A display name for your feed
 # Ex: What's Hot
